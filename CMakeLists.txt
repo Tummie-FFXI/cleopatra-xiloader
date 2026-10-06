@@ -52,13 +52,22 @@ add_executable(xiloader
     src/polrelay.h
     src/trust_token.cpp
     src/trust_token.h
+
+    # XIPivot Core
+    external/XIPivot/XIPivot.Core/src/Delegate.cpp
+    external/XIPivot/XIPivot.Core/src/MemCache.cpp
+    external/XIPivot/XIPivot.Core/src/Redirector.cpp
+
     ${CMAKE_CURRENT_BINARY_DIR}/src/xiloader.rc
     xiloader.manifest
 )
 
 set_target_properties(xiloader PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE")
 
-target_include_directories(xiloader PUBLIC ${PROJECT_SOURCE_DIR}/xiloader)
+target_include_directories(xiloader PUBLIC
+    ${PROJECT_SOURCE_DIR}/xiloader
+    ${PROJECT_SOURCE_DIR}/external/XIPivot/XIPivot.Core/src
+)
 
 target_link_libraries(xiloader PUBLIC
     detours

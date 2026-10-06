@@ -9,3 +9,5 @@ xiloader.exe
 xiloader.pdb
 *.ilk
 *.exe.manifest
+# Cleopatra downloaded DAT overlays
+data/

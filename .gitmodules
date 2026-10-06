@@ -1,0 +1,3 @@
+[submodule "external/XIPivot"]
+	path = external/XIPivot
+	url = https://github.com/HealsCodes/XIPivot.git

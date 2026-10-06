@@ -33,6 +33,7 @@ This file is part of DarkStar-server source code.
 #include <fstream>
 #include <intrin.h>
 
+#include "Redirector.h"
 #include "console.h"
 #include "functions.h"
 #include "helpers.h"
@@ -606,7 +607,7 @@ int __cdecl main(int argc, char* argv[])
                 globals::g_Hide              = jsonGet<bool>(jsonData, "hide").value_or(globals::g_Hide);
                 globals::g_TrustThisComputer = jsonGet<bool>(jsonData, "trust_this_computer").value_or(globals::g_TrustThisComputer);
 
-                std::string language = jsonGet<std::string>(jsonData, "language").value_or({});
+                std::string language = jsonGet<std::string>(jsonData, "language").value_or(std::string{});
 
                 setLanguage(language);
             }
@@ -794,6 +795,42 @@ int __cdecl main(int argc, char* argv[])
                         xiloader::console::output(xiloader::color::error, "PlayOnline install folder not found in the registry (HKLM\\%s\\InstallFolder). Check PlayOnline is installed and --lang matches your install.", xiloader::functions::GetRegistryPlayOnlineKey(globals::g_Language));
                     }
                     lpCommandTable[POLFUNC_INSTALL_FOLDER](installFolder);
+                    lpCommandTable[POLFUNC_FILE_INIT](); // Initialize polcore file system
+
+                    auto& pivot = XiPivot::Core::Redirector::instance();
+
+                    char exePath[MAX_PATH];
+                    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+
+                    std::filesystem::path pivotRoot =
+                        std::filesystem::path(exePath).parent_path() / "data" / "overlays";
+
+                    pivot.setDebugLog(true);
+                    pivot.setRootPath(pivotRoot.string());
+                    pivot.setRedirectFOpenS(true);
+
+                    bool overlayLoaded = pivot.addOverlay("Cleopatra");
+                    bool hooksInstalled = pivot.setupHooks();
+
+                    if (!overlayLoaded)
+                    {
+                        xiloader::console::output(
+                            xiloader::color::error,
+                            "Cleopatra Pivot: failed to load overlay.");
+                    }
+                    else if (!hooksInstalled)
+                    {
+                        xiloader::console::output(
+                            xiloader::color::error,
+                            "Cleopatra Pivot: failed to install hooks.");
+                    }
+                    else
+                    {
+                        xiloader::console::output(
+                            xiloader::color::success,
+                            "Cleopatra Pivot loaded successfully.");
+                    }
+
                     lpCommandTable[POLFUNC_FILE_INIT](); // Initialize polcore file system
 
                     if (!xiloader::playonline::disableCipher())

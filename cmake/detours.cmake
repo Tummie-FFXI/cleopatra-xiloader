@@ -22,5 +22,6 @@ if (detours_ADDED)
     target_include_directories(detours
       PUBLIC
         $<BUILD_INTERFACE:${detours_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${detours_SOURCE_DIR}/detours>
     )
 endif()

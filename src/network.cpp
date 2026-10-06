@@ -469,7 +469,7 @@ namespace xiloader
 
         bool retval = false;
 
-        std::string errorMessage = jsonGet<std::string>(login_reply_json, "error_message").value_or({}); // {} = empty string
+        std::string errorMessage = jsonGet<std::string>(login_reply_json, "error_message").value_or(std::string{}); // {} = empty string
 
         if (errorMessage.empty())
         {
